@@ -1,0 +1,84 @@
+name: Release & Push
+on: [push, workflow_dispatch]
+env:
+  BUILD_TYPE: Release
+jobs:
+  release:
+    strategy:
+      matrix:
+        arch: [x64]
+        generator: [Visual Studio 17 2022]
+        target: [RE4]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure CMake
+        run: cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "${{ matrix.generator }}" -A ${{ matrix.arch }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }} --target ${{ matrix.target }}
+
+      - name: Archive release to ZIP
+        run: |
+          echo ${{ github.sha }} > ${{ github.workspace }}/reframework_revision.txt
+          echo none > ${{ github.workspace }}/DELETE_OPENVR_API_DLL_IF_YOU_WANT_TO_USE_OPENXR
+          7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/reframework_revision.txt
+          7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/DELETE_OPENVR_API_DLL_IF_YOU_WANT_TO_USE_OPENXR
+          7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/build/bin/${{ matrix.target }}/dinput8.dll
+          7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/dependencies/openvr/bin/win64/openvr_api.dll
+          7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/build/_deps/openxr-build/src/loader/${{ env.BUILD_TYPE }}/openxr_loader.dll
+          7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/scripts
+          7z rn ${{ github.workspace }}/${{ matrix.target }}.zip scripts reframework/autorun
+
+      - name: Extract release to folder
+        run: |
+          7z x ${{ github.workspace }}/${{ matrix.target }}.zip -o${{ github.workspace }}/release -r
+          rm ${{ github.workspace }}/${{ matrix.target }}.zip
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: ${{ github.workspace }}/release/*
+          compression-level: 9
+          retention-days: 90
+          if-no-files-found: error
+
+  push:
+    strategy:
+      matrix:
+        target: [RE4]
+    runs-on: windows-latest
+    needs: release
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/pd-upscaler'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ github.workspace }}/artifacts
+
+      - name: Archive release to ZIP
+        run: |
+          7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/artifacts/${{ matrix.target }}/*
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          repo: ${{ github.event.repository.name }}
+          owner: ${{ github.event.repository.owner.login }}
+          token: ${{ secrets.REPO_TOKEN }}
+          name: ${{ format('REF EMPRESS Release ({0} | {1})', github.ref_name, github.sha) }}
+          tag: ${{ github.ref_name }}-empress
+          artifacts: ${{ github.workspace }}/${{ matrix.target }}.zip
+          makeLatest: false
+          bodyFile: ${{ github.workspace }}/nightly-body.md
+          allowUpdates: true
