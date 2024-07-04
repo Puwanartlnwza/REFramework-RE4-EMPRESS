@@ -22,9 +22,9 @@
 Mods::Mods() {
     m_mods.emplace_back(REFrameworkConfig::get());
 
-#if defined(RE3) || defined(RE8) || defined(MHRISE)
-    m_mods.emplace_back(std::make_unique<IntegrityCheckBypass>());
-#endif
+// #if defined(RE3) || defined(RE8) || defined(MHRISE)
+//     m_mods.emplace_back(std::make_unique<IntegrityCheckBypass>());
+// #endif
 
 #ifndef BAREBONES
     m_mods.emplace_back(Hooks::get());
