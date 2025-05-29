@@ -28,6 +28,20 @@
 #endif
 #endif
 
+namespace via {
+enum class DisplayType : int32_t {
+    Fit = 0,
+    Uniform16x9 = 1,
+    Uniform21x9 = 2,
+    Uniform4x3 = 3,
+    Uniform5x4 = 7,
+    Uniform16x10 = 4,
+    Uniform32x9 = 5,
+    Uniform48x9 = 6,
+    // เพิ่มเอง
+};
+}
+
 void Graphics::on_config_load(const utility::Config& cfg) {
     for (IModValue& option : m_options) {
         option.config_load(cfg);
@@ -384,7 +398,7 @@ void Graphics::do_ultrawide_fix() {
     // This disables any kind of pillarboxing and letterboxing.
     // This cannot be directly restored once applied.
     if (set_display_type_method != nullptr) {
-        set_display_type_method->call(sdk::get_thread_context(), main_view, via::DisplayType::Fit);
+        set_display_type_method->call(sdk::get_thread_context(), main_view, via::DisplayType::Uniform5x4);
     }
 }
 
