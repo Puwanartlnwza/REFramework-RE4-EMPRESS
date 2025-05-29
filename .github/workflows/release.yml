@@ -75,7 +75,7 @@ jobs:
         with:
           repo: ${{ github.event.repository.name }}
           owner: ${{ github.event.repository.owner.login }}
-          token: ${{ secrets.REPO_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN  }}
           name: ${{ format('REF EMPRESS Release ({0} | {1})', github.ref_name, github.sha) }}
           tag: ${{ github.ref_name }}-empress
           artifacts: ${{ github.workspace }}/${{ matrix.target }}.zip
