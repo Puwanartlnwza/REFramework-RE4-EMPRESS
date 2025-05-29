@@ -14053,8 +14053,7 @@ namespace via {
         Uniform21x9 = 4,
         Uniform32x9 = 5,
         Uniform48x9 = 6,
-        Uniform5x4 = 7,
-        Fix480p = 19,
+        Fix480p = 7,
         Fix720p = 8,
         Fix1080p = 9,
         Fix4K = 10,
@@ -14066,6 +14065,7 @@ namespace via {
         NintendoSwitch = 16,
         Fix684x384 = 17,
         Fix1368x768 = 18,
+        Uniform5x4 = 19,
     };
 }
 namespace app::ropeway::UpdateOrderGroup {
