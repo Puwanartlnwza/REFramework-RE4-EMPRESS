@@ -70,15 +70,26 @@ jobs:
         run: |
           7z a ${{ github.workspace }}/${{ matrix.target }}.zip ${{ github.workspace }}/artifacts/${{ matrix.target }}/*
 
-      - name: Create Release
+      - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          repo: ${{ github.event.repository.name }}
-          owner: ${{ github.event.repository.owner.login }}
-          token: ${{ secrets.GITHUB_TOKEN  }}
-          name: ${{ format('REF EMPRESS Release ({0} | {1})', github.ref_name, github.sha) }}
-          tag: ${{ github.ref_name }}-empress
-          artifacts: ${{ github.workspace }}/${{ matrix.target }}.zip
-          makeLatest: true
-          bodyFile: ${{ github.workspace }}/nightly-body.md
-          allowUpdates: true
+            repo: REFramework-RE4-EMPRESS
+            owner: Puwanartlnwza
+            name: REF EMPRESS Release (pd-upscaler | 0e9c6f66310420a4913e15e5e534c72a0cb50c2d)
+            tag: pd-upscaler-empress
+            artifacts: D:\a\REFramework-RE4-EMPRESS\REFramework-RE4-EMPRESS/RE4.zip
+            makeLatest: false
+            bodyFile: D:\a\REFramework-RE4-EMPRESS\REFramework-RE4-EMPRESS/nightly-body.md
+            allowUpdates: true
+            generateReleaseNotes: false
+            omitBody: false
+            omitBodyDuringUpdate: false
+            omitDraftDuringUpdate: false
+            omitName: false
+            omitNameDuringUpdate: false
+            omitPrereleaseDuringUpdate: false
+            removeArtifacts: false
+            replacesArtifacts: true
+            skipIfReleaseExists: false
+            updateOnlyUnreleased: false
+            token: ${{ secrets.GITHUB_TOKEN }}
