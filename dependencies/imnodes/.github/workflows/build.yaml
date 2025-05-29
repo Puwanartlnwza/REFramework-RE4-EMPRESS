@@ -8,17 +8,41 @@ jobs:
         platform: [macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-     - name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
         with:
-        submodules: 'recursive'
-        token: ${{ secrets.GITHUB_TOKEN }}
-        - name: Setup vcpkg
+          submodules: 'recursive'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup vcpkg
         uses: lukka/run-vcpkg@v10.1
         with:
-          vcpkgDirectory: ${{ github.workspace}}/vcpkg
+          vcpkgDirectory: ${{ github.workspace }}/vcpkg
           runVcpkgInstall: true
+
       - name: CMake generate
-        run: cmake -B build-release/ -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        run: cmake -B build-release/ -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+
       - name: CMake build
         run: cmake --build build-release/ -j
+
+      - name: Zip Output
+        run: |
+          cd build-release
+          zip -r ../RE4.zip . || 7z a ../RE4.zip .  # fallback for Windows
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          repo: REFramework-RE4-EMPRESS
+          owner: Puwanartlnwza
+          name: REF EMPRESS Release (master | ${{ github.sha }})
+          tag: master-empress
+          artifacts: RE4.zip
+          bodyFile: nightly-body.md
+          makeLatest: true
+          allowUpdates: true
+          generateReleaseNotes: false
+          replacesArtifacts: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
