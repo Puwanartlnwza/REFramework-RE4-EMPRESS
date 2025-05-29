@@ -14065,6 +14065,7 @@ namespace via {
         NintendoSwitch = 16,
         Fix684x384 = 17,
         Fix1368x768 = 18,
+        Uniform5x4 = 19,
     };
 }
 namespace app::ropeway::UpdateOrderGroup {
