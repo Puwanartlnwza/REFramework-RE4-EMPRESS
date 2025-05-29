@@ -25,23 +25,9 @@
 #else
 #include "sdk/regenny/mhrise_tdb71/via/Window.hpp"
 #include "sdk/regenny/mhrise_tdb71/via/SceneView.hpp"
+#include "sdk/Enums_Internal.hpp"
 #endif
 #endif
-
-namespace via {
-enum class DisplayType : int32_t {
-    Fit = 0,
-    Uniform16x9 = 1,
-    Uniform21x9 = 2,
-    Uniform4x3 = 3,
-    Uniform5x4 = 7,
-    Uniform16x10 = 4,
-    Uniform32x9 = 5,
-    Uniform48x9 = 6,
-    // เพิ่มเอง
-};
-}
-
 void Graphics::on_config_load(const utility::Config& cfg) {
     for (IModValue& option : m_options) {
         option.config_load(cfg);
