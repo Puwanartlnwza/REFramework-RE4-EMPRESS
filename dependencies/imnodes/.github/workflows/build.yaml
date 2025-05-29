@@ -8,11 +8,12 @@ jobs:
         platform: [macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Checkout
+     - name: Checkout
         uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
-      - name: Setup vcpkg
+        submodules: 'recursive'
+        token: ${{ secrets.GITHUB_TOKEN 
+        - name: Setup vcpkg
         uses: lukka/run-vcpkg@v10.1
         with:
           vcpkgDirectory: ${{ github.workspace}}/vcpkg
